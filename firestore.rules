@@ -1,0 +1,19 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null &&
+        request.auth.token.email in [
+          'kavinsky@liga-das-bandas.app',
+          'roger@liga-das-bandas.app',
+          'daniel@liga-das-bandas.app'
+        ];
+    }
+
+    match /bands/{bandId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

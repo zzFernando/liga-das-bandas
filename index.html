@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liga das Bandas</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <button id="admin-toggle-btn" type="button" class="admin-toggle-btn">🔒 Admin</button>
+  <h1>🎸 Liga das Bandas</h1>
+  <p class="subtitle">Classificação por ouvintes mensais do Spotify — Série A, B e C</p>
+</header>
+
+<div id="login-modal" class="modal-overlay hidden">
+  <form id="login-form" class="login-card" autocomplete="off">
+    <h2>Login administrador</h2>
+    <input type="text" id="login-user" placeholder="Usuário" required autocomplete="username">
+    <input type="password" id="login-password" placeholder="Senha" required autocomplete="current-password">
+    <div class="login-actions">
+      <button type="submit">Entrar</button>
+      <button type="button" id="login-cancel-btn" class="secondary">Cancelar</button>
+    </div>
+    <p id="login-error" class="login-error hidden">Usuário ou senha inválidos.</p>
+  </form>
+</div>
+
+<main>
+  <section class="panel add-band-panel admin-only hidden" id="add-band-panel">
+    <h2>Adicionar / Atualizar banda</h2>
+    <form id="band-form" autocomplete="off">
+      <input type="text" id="band-name" placeholder="Nome da banda" required>
+      <input type="number" id="band-listeners" placeholder="Ouvintes mensais" min="0" step="1" required>
+      <button type="submit">Adicionar</button>
+    </form>
+    <p class="hint">Já existe uma banda com esse nome? Ela é atualizada em vez de duplicada.</p>
+  </section>
+
+  <section class="stats" id="stats"></section>
+
+  <section class="tier" id="tier-a">
+    <h2 class="tier-title tier-a-title">Série A</h2>
+    <div class="table-wrap"><table class="liga-table"><thead>
+      <tr><th>Pos</th><th>Banda</th><th>Ouvintes mensais</th><th></th></tr>
+    </thead><tbody id="tbody-a"></tbody></table></div>
+  </section>
+
+  <section class="tier" id="tier-b">
+    <h2 class="tier-title tier-b-title">Série B</h2>
+    <div class="table-wrap"><table class="liga-table"><thead>
+      <tr><th>Pos</th><th>Banda</th><th>Ouvintes mensais</th><th></th></tr>
+    </thead><tbody id="tbody-b"></tbody></table></div>
+  </section>
+
+  <section class="tier" id="tier-c">
+    <h2 class="tier-title tier-c-title">Série C</h2>
+    <div class="table-wrap"><table class="liga-table"><thead>
+      <tr><th>Pos</th><th>Banda</th><th>Ouvintes mensais</th><th></th></tr>
+    </thead><tbody id="tbody-c"></tbody></table></div>
+  </section>
+
+  <section class="legend">
+    <span class="legend-item"><i class="dot g4"></i> G4 — zona de acesso</span>
+    <span class="legend-item"><i class="dot z4"></i> Z4 — zona de rebaixamento</span>
+  </section>
+
+  <section class="panel backup-panel admin-only hidden" id="backup-panel">
+    <h2>Backup</h2>
+    <div class="backup-actions">
+      <button id="export-btn" type="button">Exportar JSON</button>
+      <button id="import-btn" type="button">Importar JSON</button>
+      <input type="file" id="import-file" accept="application/json" hidden>
+    </div>
+    <p class="hint">Os dados ficam salvos no navegador (localStorage). Exporte de vez em quando pra não perder nada.</p>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

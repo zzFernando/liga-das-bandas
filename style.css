@@ -637,6 +637,34 @@ table.liga-table {
 
 .legend-item { display: flex; align-items: center; gap: 6px; }
 
+.suggest-cta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.suggest-cta button {
+  background: var(--g4-bg);
+  border-color: var(--g4-border);
+  color: var(--text);
+}
+
+.suggest-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.suggest-row:first-child { border-top: none; }
+.suggest-actions { display: flex; gap: 6px; flex: 0 0 auto; }
+#suggestions-list a { color: var(--g4-border); }
+
 .dot {
   width: 10px;
   height: 10px;

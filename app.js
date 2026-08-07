@@ -1331,9 +1331,7 @@ function usernameToEmail(username) {
 
 function setAdminUI(loggedIn, label) {
   const toggleBtn = document.getElementById("admin-toggle-btn");
-  document.getElementById("add-band-panel").classList.toggle("hidden", !loggedIn);
-  document.getElementById("backup-panel").classList.toggle("hidden", !loggedIn);
-  document.getElementById("close-week-panel").classList.toggle("hidden", !loggedIn);
+  document.querySelectorAll(".admin-only").forEach((el) => el.classList.toggle("hidden", !loggedIn));
   if (loggedIn) {
     toggleBtn.textContent = `Sair (${label})`;
     toggleBtn.classList.add("is-logged-in");
@@ -1411,6 +1409,104 @@ document.getElementById("band-modal").addEventListener("click", (e) => {
   if (e.target.id === "band-modal") closeBandModal();
 });
 
+// --- Sugestões de bandas (público) ---
+function openSuggestModal() {
+  document.getElementById("suggest-form").reset();
+  document.getElementById("suggest-ok").classList.add("hidden");
+  document.getElementById("suggest-modal").classList.remove("hidden");
+  document.getElementById("suggest-name").focus();
+}
+function closeSuggestModal() {
+  document.getElementById("suggest-modal").classList.add("hidden");
+}
+document.getElementById("suggest-open-btn").addEventListener("click", openSuggestModal);
+document.getElementById("suggest-cancel-btn").addEventListener("click", closeSuggestModal);
+document.getElementById("suggest-modal").addEventListener("click", (e) => {
+  if (e.target.id === "suggest-modal") closeSuggestModal();
+});
+document.getElementById("suggest-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("suggest-name").value.trim();
+  if (!name) return;
+  const btn = e.target.querySelector("button[type=submit]");
+  btn.disabled = true;
+  try {
+    await db.collection("suggestions").add({
+      name,
+      city: document.getElementById("suggest-city").value.trim(),
+      link: document.getElementById("suggest-link").value.trim(),
+      uid: (auth.currentUser && auth.currentUser.uid) || null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    track("suggest_band", { name });
+    document.getElementById("suggest-form").reset();
+    document.getElementById("suggest-ok").classList.remove("hidden");
+    setTimeout(closeSuggestModal, 1200);
+  } catch (err) {
+    alert("Erro ao enviar: " + err.message);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// --- Sugestões (painel admin) ---
+let suggestionsById = {};
+async function loadSuggestions() {
+  if (!isAdmin) return;
+  const list = document.getElementById("suggestions-list");
+  suggestionsById = {};
+  try {
+    const snap = await db.collection("suggestions").orderBy("createdAt", "desc").limit(200).get();
+    if (snap.empty) {
+      list.innerHTML = '<p class="hint">Nenhuma sugestão ainda.</p>';
+      return;
+    }
+    list.innerHTML = snap.docs
+      .map((d) => {
+        const s = d.data();
+        suggestionsById[d.id] = s;
+        const safe = /^https?:\/\//i.test(s.link || "") ? s.link : "";
+        const linkHtml = safe
+          ? ` <a href="${escapeHtml(safe)}" target="_blank" rel="noopener noreferrer">link</a>`
+          : "";
+        return `<div class="suggest-row">
+          <span><strong>${escapeHtml(s.name)}</strong>${s.city ? ` · ${escapeHtml(s.city)}` : ""}${linkHtml}</span>
+          <span class="suggest-actions">
+            <button type="button" class="icon-btn" data-add-id="${d.id}">adicionar</button>
+            <button type="button" class="icon-btn danger" data-id="${d.id}">remover</button>
+          </span>
+        </div>`;
+      })
+      .join("");
+  } catch (err) {
+    list.innerHTML = '<p class="hint">Erro ao carregar sugestões.</p>';
+    console.error("Sugestões:", err);
+  }
+}
+document.getElementById("refresh-suggestions-btn").addEventListener("click", loadSuggestions);
+document.getElementById("suggestions-list").addEventListener("click", (e) => {
+  if (!isAdmin) return;
+  const addBtn = e.target.closest("button[data-add-id]");
+  if (addBtn) {
+    const id = addBtn.dataset.addId;
+    const s = suggestionsById[id];
+    if (!s) return;
+    if (!confirm(`Adicionar "${s.name}" à liga?`)) return;
+    const links = { location: s.city || "" };
+    const link = s.link || "";
+    if (/spotify\.com/i.test(link)) links.spotify = link;
+    else if (/instagram\.com/i.test(link)) links.instagram = normalizeInstagram(link);
+    else if (/youtube\.com|youtu\.be/i.test(link)) links.youtube = link;
+    addOrUpdateBand(s.name, links);
+    db.collection("suggestions").doc(id).delete().then(loadSuggestions).catch((err) => alert(err.message));
+    return;
+  }
+  const rmBtn = e.target.closest("button[data-id]");
+  if (rmBtn) {
+    db.collection("suggestions").doc(rmBtn.dataset.id).delete().then(loadSuggestions).catch((err) => alert(err.message));
+  }
+});
+
 document.getElementById("edit-form").addEventListener("submit", (e) => {
   e.preventDefault();
   if (!editingBandId) return;
@@ -1473,6 +1569,7 @@ auth.onAuthStateChanged((user) => {
       useCollection(); // admin lê a coleção (precisa do pending)
       rebuildBoard(); // garante que o board existe/está fresco
       refreshTodayVotes(); // popula o painel de admin
+      loadSuggestions(); // carrega as sugestões pendentes
     } else {
       useBoard(); // visitante comum lê só o board (barato)
     }

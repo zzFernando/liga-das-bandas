@@ -99,7 +99,26 @@
   </div>
 </div>
 
+<div id="suggest-modal" class="modal-overlay hidden">
+  <form id="suggest-form" class="login-card" autocomplete="off">
+    <h2>Sugerir banda</h2>
+    <input type="text" id="suggest-name" placeholder="Nome da banda" required maxlength="120">
+    <input type="text" id="suggest-city" placeholder="Cidade - UF (opcional)" maxlength="80">
+    <input type="text" id="suggest-link" placeholder="Link Spotify/Instagram (opcional)" maxlength="300">
+    <div class="login-actions">
+      <button type="submit">Enviar</button>
+      <button type="button" id="suggest-cancel-btn" class="secondary">Cancelar</button>
+    </div>
+    <p id="suggest-ok" class="hint hidden">Valeu! Sugestão enviada.</p>
+  </form>
+</div>
+
 <main>
+  <section class="suggest-cta">
+    <span>Não achou uma banda?</span>
+    <button id="suggest-open-btn" type="button">Sugerir banda</button>
+  </section>
+
   <section class="panel add-band-panel admin-only hidden" id="add-band-panel">
     <h2>Adicionar banda</h2>
     <details class="cred-box">
@@ -142,6 +161,14 @@
     <p class="hint">Sobe/Desce/Saldo = votos acumulados desta semana (aplicados no fechamento). "Hoje" = votos novos criados hoje. Ordenado por atividade da semana.</p>
   </section>
 
+  <section class="panel admin-only hidden" id="suggestions-panel">
+    <div class="votes-summary" style="justify-content:space-between">
+      <h2 style="margin:0">Sugestões de bandas</h2>
+      <button id="refresh-suggestions-btn" type="button">Atualizar</button>
+    </div>
+    <div id="suggestions-list"></div>
+  </section>
+
 
   <div id="app-loader" class="app-loader">
     <span class="spinner"></span>
@@ -154,6 +181,7 @@
     <span class="legend-item"><i class="dot g4"></i> G4 — zona de acesso</span>
     <span class="legend-item"><i class="dot z4"></i> Z4 — zona de rebaixamento</span>
   </section>
+
 
   <section class="panel backup-panel admin-only hidden" id="backup-panel">
     <h2>Backup</h2>

@@ -77,6 +77,15 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Sugestões de bandas: qualquer usuário logado pode enviar; só admin lê/apaga.
+    match /suggestions/{id} {
+      allow create: if request.auth != null
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 120;
+      allow read, delete: if isAdmin();
+    }
+
     // Collection group queries (buscar votos em todas as bandas de uma vez, ex: "meus votos"
     // e "votos de hoje") precisam dessa regra declarada com wildcard recursivo no nível raiz;
     // a regra aninhada dentro de /bands/{bandId}/votes só cobre leitura de um doc específico.

@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Liga das Bandas</title>
+<script>
+  // Redireciona os domínios padrão do Firebase para o domínio próprio.
+  (function () {
+    var h = location.hostname;
+    if (h.endsWith(".web.app") || h.endsWith(".firebaseapp.com")) {
+      location.replace("https://ligadasbandas.com" + location.pathname + location.search + location.hash);
+    }
+  })();
+</script>
 <meta name="description" content="Ranking de bandas independentes por votos dos ouvintes. Vote nas suas favoritas — o ranking fecha e atualiza toda semana.">
 <meta name="theme-color" content="#14532d">
 <link rel="canonical" href="https://ligadasbandas.com/">
@@ -24,14 +33,17 @@
 <meta name="twitter:description" content="Ranking de bandas independentes por votos dos ouvintes. Vote nas suas favoritas — o ranking fecha toda semana.">
 <meta name="twitter:image" content="https://ligadasbandas.com/og-image.png">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="apple-touch-icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="manifest" href="/manifest.webmanifest">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
   <button id="admin-toggle-btn" type="button" class="admin-toggle-btn">Admin</button>
   <h1>Liga das Bandas</h1>
-  <p class="subtitle">Ranking por votos dos ouvintes — Série A a D e Divisão de Acesso</p>
+  <div class="band-carousel" id="band-carousel" aria-hidden="true">
+    <div class="carousel-track" id="carousel-track"></div>
+  </div>
 </header>
 
 <div id="login-modal" class="modal-overlay hidden">
@@ -63,9 +75,22 @@
   </form>
 </div>
 
+<div id="band-modal" class="modal-overlay hidden">
+  <div class="band-card" id="band-card">
+    <button type="button" id="band-modal-close" class="band-modal-close" aria-label="Fechar">&times;</button>
+    <div id="band-modal-content"></div>
+  </div>
+</div>
+
 <main>
   <section class="panel add-band-panel admin-only hidden" id="add-band-panel">
     <h2>Adicionar banda</h2>
+    <details class="cred-box">
+      <summary>Credenciais de busca (Spotify / Last.fm)</summary>
+      <input type="password" id="cred-spotify" placeholder="Spotify ClientID:Secret (ou access token)" autocomplete="off">
+      <input type="password" id="cred-lastfm" placeholder="Last.fm API key" autocomplete="off">
+      <p class="hint">Salvas só neste navegador. Usadas pelo Auto-preencher e pelos botões de atualizar.</p>
+    </details>
     <button type="button" id="update-spotify-btn" title="Preencher foto e link do Spotify (e YouTube de busca)">Atualizar Spotify</button>
     <button type="button" id="update-lastfm-btn" title="Preencher gênero, ouvintes e link do Last.fm">Atualizar Last.fm</button>
     <form id="band-form" autocomplete="off">
@@ -86,6 +111,18 @@
     <button id="close-week-btn" type="button">Fechar semana e atualizar ranking</button>
   </section>
 
+  <section class="panel admin-only hidden" id="votes-panel">
+    <h2>Acompanhamento de votos</h2>
+    <div id="votes-summary" class="votes-summary"></div>
+    <div class="table-wrap">
+      <table class="liga-table votes-table">
+        <thead><tr><th>Banda</th><th>Sobe</th><th>Desce</th><th>Saldo</th><th>Hoje</th></tr></thead>
+        <tbody id="votes-panel-body"></tbody>
+      </table>
+    </div>
+    <p class="hint">Sobe/Desce/Saldo = votos acumulados desta semana (aplicados no fechamento). "Hoje" = votos novos criados hoje. Ordenado por atividade da semana.</p>
+  </section>
+
   <section class="update-dates">
     <span>Última atualização: <strong id="last-update-date">—</strong></span>
     <span>Próxima atualização: <strong id="next-update-date">—</strong></span>
@@ -103,7 +140,15 @@
 
   <section class="filters">
     <input type="text" id="search-input" placeholder="Buscar banda...">
+    <select id="genre-filter">
+      <option value="">Todos os gêneros</option>
+    </select>
   </section>
+
+  <div id="app-loader" class="app-loader">
+    <span class="spinner"></span>
+    <span>Carregando ranking…</span>
+  </div>
 
   <div id="tiers-container"></div>
 
@@ -123,9 +168,15 @@
   </section>
 </main>
 
+<div id="cookie-banner" class="cookie-banner hidden">
+  <span>Usamos cookies pra entender como o site é usado e melhorar a experiência.</span>
+  <button id="cookie-accept" type="button">OK</button>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="app.js"></script>
 </body>

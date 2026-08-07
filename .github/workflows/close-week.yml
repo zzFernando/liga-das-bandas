@@ -1,0 +1,31 @@
+name: Fechar semana
+
+on:
+  # Domingo 03:00 UTC = domingo 00:00 no horário de Brasília (UTC-3).
+  # Ajuste o cron se quiser outro dia/horário (cron é sempre em UTC).
+  schedule:
+    - cron: "0 3 * * 0"
+  # Permite rodar manualmente pelo botão "Run workflow" na aba Actions.
+  workflow_dispatch:
+
+jobs:
+  fechar-semana:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências
+        working-directory: scripts
+        run: npm install --no-audit --no-fund
+
+      - name: Fechar semana
+        working-directory: scripts
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node close-week.js

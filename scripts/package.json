@@ -1,0 +1,9 @@
+{
+  "name": "liga-das-bandas-scripts",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Scripts de automação (fechar semana via GitHub Actions)",
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}

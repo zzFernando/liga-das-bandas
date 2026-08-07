@@ -1,10 +1,10 @@
 name: Fechar semana
 
 on:
-  # Domingo 03:00 UTC = domingo 00:00 no horário de Brasília (UTC-3).
+  # Sexta 21:00 UTC = sexta 18:00 no horário de Brasília (UTC-3).
   # Ajuste o cron se quiser outro dia/horário (cron é sempre em UTC).
   schedule:
-    - cron: "0 3 * * 0"
+    - cron: "0 21 * * 5"
   # Permite rodar manualmente pelo botão "Run workflow" na aba Actions.
   workflow_dispatch:
 

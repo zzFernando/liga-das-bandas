@@ -1,9 +1,9 @@
 name: Backup semanal
 
 on:
-  # Domingo 02:00 UTC (1h antes do fechamento das 03:00) — captura o estado da semana.
+  # Sexta 20:00 UTC (1h antes do fechamento das 21:00) — captura o estado da semana.
   schedule:
-    - cron: "0 2 * * 0"
+    - cron: "0 20 * * 5"
   workflow_dispatch:
 
 permissions:

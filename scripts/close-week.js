@@ -85,7 +85,7 @@ async function main() {
       instagram: b.instagram || "",
       genres: b.genres || [],
       lastfm: b.lastfm || "",
-      history: [...(b.history || []), { t: now, pos: posMap.get(doc.id), score: newScore }].slice(-12),
+      // bio e history ficam só no doc da banda (a ficha os busca sob demanda).
     })),
   });
 

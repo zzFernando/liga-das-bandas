@@ -70,6 +70,25 @@ async function main() {
   const next = admin.firestore.Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000);
   await db.collection("meta").doc("ranking").update({ lastUpdate: now, nextUpdate: next });
 
+  // Reescreve o documento agregado meta/board (o que os visitantes leem).
+  await db.collection("meta").doc("board").set({
+    updatedAt: now,
+    bands: scored.map(({ doc, b, newScore }) => ({
+      id: doc.id,
+      name: b.name || "",
+      score: newScore,
+      previousScore: b.score || 0,
+      listeners: b.listeners || 0,
+      image: b.image || "",
+      spotify: b.spotify || "",
+      youtube: b.youtube || "",
+      instagram: b.instagram || "",
+      genres: b.genres || [],
+      lastfm: b.lastfm || "",
+      history: [...(b.history || []), { t: now, pos: posMap.get(doc.id), score: newScore }].slice(-12),
+    })),
+  });
+
   // Rodada semanal: apaga todos os votos individuais pra a próxima semana começar do zero.
   const votes = await db.collectionGroup("votes").get();
   for (let i = 0; i < votes.docs.length; i += 400) {

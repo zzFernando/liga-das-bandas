@@ -1,0 +1,18 @@
+# Credenciais / chaves — NUNCA commitar
+creds.json
+service-account*.json
+*serviceAccount*.json
+*-firebase-adminsdk-*.json
+*.pem
+*.key
+.env
+.env.*
+
+# Dependências / build
+node_modules/
+scripts/node_modules/
+
+# Backups locais e temporários (os do Actions ficam em backups/ e são commitados de propósito)
+*.log
+.DS_Store
+Thumbs.db

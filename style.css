@@ -483,9 +483,22 @@ table.liga-table {
 .band-genre {
   padding: 1px 7px;
   border-radius: 999px;
-  background: var(--border);
-  color: var(--text);
+  background: rgba(34, 139, 87, 0.16);
+  color: #16a34a;
   text-transform: capitalize;
+}
+
+.band-loc {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(56, 132, 255, 0.16);
+  color: #2f6fed;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .band-genre { color: #3ddc84; }
+  .band-loc { color: #7aa8ff; }
 }
 
 .vote-cell {

@@ -67,6 +67,7 @@
     <input type="url" id="edit-spotify" placeholder="Link do Spotify (opcional)">
     <input type="url" id="edit-youtube" placeholder="Link do YouTube (opcional)">
     <input type="text" id="edit-instagram" placeholder="Instagram, sem @ (opcional)">
+    <input type="text" id="edit-location" placeholder="Cidade - UF (opcional)">
     <div class="login-actions">
       <button type="submit">Salvar</button>
       <button type="button" id="edit-cancel-btn" class="secondary">Cancelar</button>
@@ -99,6 +100,7 @@
       <input type="url" id="band-spotify" placeholder="Link do Spotify (opcional)">
       <input type="url" id="band-youtube" placeholder="Link do YouTube (opcional)">
       <input type="text" id="band-instagram" placeholder="Instagram, sem @ (opcional)">
+      <input type="text" id="band-location" placeholder="Cidade - UF (opcional)">
       <button type="button" id="autofill-btn" title="Preencher Spotify e YouTube a partir do nome">Auto-preencher</button>
       <button type="submit">Adicionar</button>
     </form>
@@ -113,6 +115,7 @@
 
   <section class="panel admin-only hidden" id="votes-panel">
     <h2>Acompanhamento de votos</h2>
+    <button id="refresh-votes-btn" type="button">Atualizar votos de hoje</button>
     <div id="votes-summary" class="votes-summary"></div>
     <div class="table-wrap">
       <table class="liga-table votes-table">

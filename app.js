@@ -233,13 +233,14 @@ async function openBandModal(band) {
     mv !== 0
       ? `<span class="rank-move ${mv > 0 ? "up" : "down"}">${mv > 0 ? "▲" : "▼"}${Math.abs(mv)}</span>`
       : "";
-  const genres =
-    Array.isArray(band.genres) && band.genres.length
-      ? `<div class="band-meta">${band.genres
-          .slice(0, 4)
-          .map((g) => `<span class="band-genre">${escapeHtml(g)}</span>`)
-          .join("")}</div>`
-      : "";
+  const metaParts = [];
+  if (Array.isArray(band.genres) && band.genres.length) {
+    metaParts.push(
+      ...band.genres.slice(0, 4).map((g) => `<span class="band-genre">${escapeHtml(g)}</span>`)
+    );
+  }
+  if (band.location) metaParts.push(`<span class="band-loc">${escapeHtml(band.location)}</span>`);
+  const genres = metaParts.length ? `<div class="band-meta">${metaParts.join("")}</div>` : "";
 
   const artistId = spotifyArtistId(band.spotify);
   const player = artistId
@@ -330,6 +331,9 @@ function buildBandMeta(band) {
   const parts = [];
   if (Array.isArray(band.genres) && band.genres.length) {
     parts.push(`<span class="band-genre">${band.genres.slice(0, 2).map(escapeHtml).join(" · ")}</span>`);
+  }
+  if (band.location) {
+    parts.push(`<span class="band-loc">${escapeHtml(band.location)}</span>`);
   }
   if (!parts.length) return null;
   const div = document.createElement("div");
@@ -684,6 +688,7 @@ function addOrUpdateBand(name, links) {
     spotify: (links && links.spotify) || "",
     youtube: (links && links.youtube) || "",
     instagram: (links && links.instagram) || "",
+    location: (links && links.location) || "",
   };
   // Extras opcionais vindos do Auto-preencher (gênero, link/dados do Last.fm, bio).
   ["genres", "lastfm", "lastfmListeners", "lastfmPlaycount", "bio"].forEach((k) => {
@@ -1074,6 +1079,7 @@ function boardPayload(bands) {
       spotify: b.spotify || "",
       youtube: b.youtube || "",
       instagram: b.instagram || "",
+      location: b.location || "",
       genres: b.genres || [],
       lastfm: b.lastfm || "",
       // bio e history NÃO entram no board (pesam) — a ficha os busca sob demanda.
@@ -1109,7 +1115,6 @@ function showLoaderError() {
 // Troca de fonte de dados: visitante lê o board (barato); admin lê a coleção (tem pending).
 let unsubData = null;
 let dataMode = null;
-let todayVotesTimer = null;
 
 function useBoard() {
   if (dataMode === "board") return;
@@ -1158,9 +1163,8 @@ function useCollection() {
       state.bands = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       render();
       hideAppLoader();
-      // "Votos de hoje" é usado só no painel de admin — debounce pra não reler a cada voto.
-      clearTimeout(todayVotesTimer);
-      todayVotesTimer = setTimeout(refreshTodayVotes, 3000);
+      // NÃO recarrega "votos de hoje" a cada voto (isso relia toda a coleção e
+      // dispara muitas leituras). O painel atualiza só ao logar e no botão manual.
       checkDeepLink();
     },
     (err) => {
@@ -1201,6 +1205,7 @@ function wireControls() {
     const spotifyInput = document.getElementById("band-spotify");
     const youtubeInput = document.getElementById("band-youtube");
     const instagramInput = document.getElementById("band-instagram");
+    const locationInput = document.getElementById("band-location");
     const name = nameInput.value;
     if (!name.trim()) return;
     const links = {
@@ -1208,6 +1213,7 @@ function wireControls() {
       spotify: spotifyInput.value.trim(),
       youtube: youtubeInput.value.trim(),
       instagram: normalizeInstagram(instagramInput.value),
+      location: locationInput.value.trim(),
     };
     // Junta o gênero/bio buscados no Auto-preencher, se for a mesma banda.
     if (pendingExtras && pendingExtras.forName === name.trim().toLowerCase()) {
@@ -1221,6 +1227,7 @@ function wireControls() {
     spotifyInput.value = "";
     youtubeInput.value = "";
     instagramInput.value = "";
+    locationInput.value = "";
     nameInput.focus();
   });
 
@@ -1361,6 +1368,7 @@ function wireControls() {
     if (e.target.value) track("filter_genre", { genre: e.target.value });
   });
 
+  document.getElementById("refresh-votes-btn").addEventListener("click", refreshTodayVotes);
   document.getElementById("close-week-btn").addEventListener("click", closeWeek);
 }
 
@@ -1411,6 +1419,7 @@ function openEditModal(band) {
   document.getElementById("edit-spotify").value = band.spotify || "";
   document.getElementById("edit-youtube").value = band.youtube || "";
   document.getElementById("edit-instagram").value = band.instagram || "";
+  document.getElementById("edit-location").value = band.location || "";
   document.getElementById("edit-error").classList.add("hidden");
   document.getElementById("edit-modal").classList.remove("hidden");
   document.getElementById("edit-name").focus();
@@ -1469,6 +1478,7 @@ document.getElementById("edit-form").addEventListener("submit", (e) => {
     spotify: document.getElementById("edit-spotify").value.trim(),
     youtube: document.getElementById("edit-youtube").value.trim(),
     instagram: normalizeInstagram(document.getElementById("edit-instagram").value),
+    location: document.getElementById("edit-location").value.trim(),
   });
   closeEditModal();
 });

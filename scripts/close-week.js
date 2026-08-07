@@ -61,7 +61,15 @@ async function main() {
   const next = admin.firestore.Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000);
   await db.collection("meta").doc("ranking").update({ lastUpdate: now, nextUpdate: next });
 
-  console.log(`Semana fechada: ${docs.length} banda(s) atualizada(s).`);
+  // Rodada semanal: apaga todos os votos individuais pra a próxima semana começar do zero.
+  const votes = await db.collectionGroup("votes").get();
+  for (let i = 0; i < votes.docs.length; i += 400) {
+    const delBatch = db.batch();
+    votes.docs.slice(i, i + 400).forEach((d) => delBatch.delete(d.ref));
+    await delBatch.commit();
+  }
+
+  console.log(`Semana fechada: ${docs.length} banda(s) atualizada(s), ${votes.size} voto(s) zerado(s).`);
 }
 
 main()

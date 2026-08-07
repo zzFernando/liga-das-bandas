@@ -83,6 +83,7 @@ async function main() {
       spotify: b.spotify || "",
       youtube: b.youtube || "",
       instagram: b.instagram || "",
+      location: b.location || "",
       genres: b.genres || [],
       lastfm: b.lastfm || "",
       // bio e history ficam só no doc da banda (a ficha os busca sob demanda).

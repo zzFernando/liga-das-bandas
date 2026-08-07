@@ -48,7 +48,7 @@ async function main() {
     const newScore = (b.score || 0) + VOTE_WEIGHT * ((b.pendingUp || 0) - (b.pendingDown || 0));
     return { doc, b, newScore };
   });
-  scored.sort((a, b) => b.newScore - a.newScore || (b.b.listeners || 0) - (a.b.listeners || 0));
+  scored.sort((a, b) => b.newScore - a.newScore || (b.b.lastfmListeners || 0) - (a.b.lastfmListeners || 0));
   const posMap = new Map(scored.map((x, i) => [x.doc.id, i + 1]));
 
   // Firestore permite 500 escritas por batch; paginamos por segurança.
@@ -78,7 +78,7 @@ async function main() {
       name: b.name || "",
       score: newScore,
       previousScore: b.score || 0,
-      listeners: b.listeners || 0,
+      lastfmListeners: b.lastfmListeners || 0,
       image: b.image || "",
       spotify: b.spotify || "",
       youtube: b.youtube || "",

@@ -45,7 +45,8 @@ service cloud.firestore {
           && request.resource.data.uid == uid
           && request.resource.data.bandId == bandId
           && request.resource.data.direction != resource.data.direction;
-        allow delete: if isAdmin();
+        allow delete: if isAdmin()
+          || (request.auth != null && request.auth.uid == uid);
       }
     }
 

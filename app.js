@@ -11,6 +11,8 @@ const DAILY_VOTE_LIMIT = 40;
 let state = { bands: [] };
 let isAdmin = false;
 let filterState = { search: "" };
+let collapsedSeries = new Set(); // séries recolhidas pelo usuário
+let rankMovement = new Map(); // bandId -> quantas posições subiu(+)/desceu(-) no último fechamento
 let myVotes = new Map();
 let todayVotes = [];
 let metaState = {};
@@ -56,8 +58,18 @@ function buildTierSections() {
 
     const title = document.createElement("h2");
     title.className = "tier-title";
-    title.textContent = cfg.label;
     title.style.background = cfg.color;
+    const caret = document.createElement("span");
+    caret.className = "tier-caret";
+    caret.textContent = "▾";
+    title.append(caret, document.createTextNode(" " + cfg.label));
+    title.title = "Clique para recolher/expandir";
+    title.addEventListener("click", () => {
+      if (collapsedSeries.has(cfg.key)) collapsedSeries.delete(cfg.key);
+      else collapsedSeries.add(cfg.key);
+      // durante busca a série fica sempre expandida pra mostrar o resultado
+      section.classList.toggle("collapsed", collapsedSeries.has(cfg.key) && !filterState.search);
+    });
 
     const wrap = document.createElement("div");
     wrap.className = "table-wrap";
@@ -150,7 +162,7 @@ function buildBandImage(band) {
   }
   const placeholder = document.createElement("div");
   placeholder.className = "band-thumb band-thumb-placeholder";
-  placeholder.textContent = "🎵";
+  placeholder.textContent = ((band.name || "?").trim()[0] || "?").toUpperCase();
   return placeholder;
 }
 
@@ -173,32 +185,30 @@ function buildVoteCell(band) {
   const upBtn = document.createElement("button");
   upBtn.type = "button";
   upBtn.className = "vote-btn vote-up";
-  upBtn.textContent = "⬆";
+  upBtn.textContent = "↑";
 
   const downBtn = document.createElement("button");
   downBtn.type = "button";
   downBtn.className = "vote-btn vote-down";
-  downBtn.textContent = "⬇";
+  downBtn.textContent = "↓";
 
   const voted = myVotes.get(band.id);
 
+  // Clicar no botão já escolhido remove o voto; nos dois casos o botão fica clicável.
+  upBtn.addEventListener("click", () => handleVoteClick(band, "up", upBtn, downBtn));
+  downBtn.addEventListener("click", () => handleVoteClick(band, "down", upBtn, downBtn));
+
   if (voted === "up") {
-    upBtn.disabled = true;
     upBtn.classList.add("vote-chosen");
-    upBtn.title = "Seu voto atual";
+    upBtn.title = "Seu voto — clique pra remover";
     downBtn.title = "Trocar voto pra descer";
-    downBtn.addEventListener("click", () => handleVoteClick(band, "down", upBtn, downBtn));
   } else if (voted === "down") {
-    downBtn.disabled = true;
     downBtn.classList.add("vote-chosen");
-    downBtn.title = "Seu voto atual";
+    downBtn.title = "Seu voto — clique pra remover";
     upBtn.title = "Trocar voto pra subir";
-    upBtn.addEventListener("click", () => handleVoteClick(band, "up", upBtn, downBtn));
   } else {
     upBtn.title = "Votar pra subir";
     downBtn.title = "Votar pra descer";
-    upBtn.addEventListener("click", () => handleVoteClick(band, "up", upBtn, downBtn));
-    downBtn.addEventListener("click", () => handleVoteClick(band, "down", upBtn, downBtn));
   }
 
   wrap.append(upBtn, downBtn);
@@ -220,7 +230,7 @@ function renderTable(tbodyId, list, zoneConfig) {
     tr.className = "empty-row";
     tr.innerHTML = `<td colspan="5">Nenhuma banda nessa série ainda</td>`;
     tbody.appendChild(tr);
-    return;
+    return 0;
   }
 
   const entries = list
@@ -232,7 +242,7 @@ function renderTable(tbodyId, list, zoneConfig) {
     tr.className = "empty-row";
     tr.innerHTML = `<td colspan="5">Nenhuma banda encontrada com esse filtro</td>`;
     tbody.appendChild(tr);
-    return;
+    return 0;
   }
 
   entries.forEach(({ band, index }) => {
@@ -242,7 +252,17 @@ function renderTable(tbodyId, list, zoneConfig) {
 
     const posTd = document.createElement("td");
     posTd.className = "pos";
-    posTd.textContent = index + 1;
+    const posNum = document.createElement("span");
+    posNum.textContent = index + 1;
+    posTd.appendChild(posNum);
+    const mv = rankMovement.get(band.id) || 0;
+    if (mv !== 0) {
+      const moveEl = document.createElement("span");
+      moveEl.className = "rank-move " + (mv > 0 ? "up" : "down");
+      moveEl.textContent = (mv > 0 ? "▲" : "▼") + Math.abs(mv);
+      moveEl.title = mv > 0 ? `Subiu ${mv} posição(ões)` : `Caiu ${Math.abs(mv)} posição(ões)`;
+      posTd.appendChild(moveEl);
+    }
 
     const imageTd = document.createElement("td");
     imageTd.className = "image-col";
@@ -281,6 +301,7 @@ function renderTable(tbodyId, list, zoneConfig) {
     tr.append(posTd, imageTd, nameTd, voteTd, actionsTd);
     tbody.appendChild(tr);
   });
+  return entries.length;
 }
 
 function renderStats() {
@@ -406,11 +427,32 @@ function renderUpdateDates() {
   document.getElementById("next-update-date").textContent = formatDate(metaState.nextUpdate);
 }
 
+// Movimento no ranking global: compara a posição atual (score) com a de antes
+// do último fechamento (previousScore). +N = subiu N posições.
+function computeRankMovement() {
+  const curr = [...state.bands].sort(byRank);
+  const prev = [...state.bands].sort(
+    (a, b) =>
+      (b.previousScore || 0) - (a.previousScore || 0) || (b.listeners || 0) - (a.listeners || 0)
+  );
+  const currPos = new Map(curr.map((b, i) => [b.id, i]));
+  const prevPos = new Map(prev.map((b, i) => [b.id, i]));
+  rankMovement = new Map(
+    state.bands.map((b) => [b.id, (prevPos.get(b.id) || 0) - (currPos.get(b.id) || 0)])
+  );
+}
+
 function render() {
   const tiers = getTiers();
+  const searching = !!filterState.search;
+  computeRankMovement();
   SERIES_CONFIG.forEach((cfg, idx) => {
     const zoneConfig = { g4: idx > 0, z4: idx < SERIES_CONFIG.length - 1 };
-    renderTable(`tbody-${cfg.key}`, tiers[cfg.key], zoneConfig);
+    const matched = renderTable(`tbody-${cfg.key}`, tiers[cfg.key], zoneConfig);
+    const section = document.getElementById(`tier-${cfg.key}`);
+    // Buscando: esconde séries sem resultado; as com resultado ficam expandidas.
+    section.style.display = searching && matched === 0 ? "none" : "";
+    section.classList.toggle("collapsed", collapsedSeries.has(cfg.key) && !searching);
   });
   renderStats();
   renderHighlights();
@@ -625,9 +667,15 @@ function removeBand(id) {
 async function handleVoteClick(band, direction, upBtn, downBtn) {
   upBtn.disabled = true;
   downBtn.disabled = true;
+  const isRemoving = myVotes.get(band.id) === direction;
   try {
-    await castVote(band, direction);
-    myVotes.set(band.id, direction);
+    if (isRemoving) {
+      await removeMyVote(band);
+      myVotes.delete(band.id);
+    } else {
+      await castVote(band, direction);
+      myVotes.set(band.id, direction);
+    }
     render();
   } catch (err) {
     if (err.message === "daily-limit") {
@@ -637,6 +685,24 @@ async function handleVoteClick(band, direction, upBtn, downBtn) {
     }
     render();
   }
+}
+
+async function removeMyVote(band) {
+  const uid = auth.currentUser && auth.currentUser.uid;
+  if (!uid) throw new Error("not-signed-in");
+  const bandRef = db.collection("bands").doc(band.id);
+  const voteRef = bandRef.collection("votes").doc(uid);
+  await db.runTransaction(async (tx) => {
+    const voteSnap = await tx.get(voteRef);
+    if (!voteSnap.exists) return;
+    const dir = voteSnap.data().direction;
+    tx.delete(voteRef);
+    const bandUpdate = {};
+    // Devolve o voto ao contador pendente (não mexe no limite diário de propósito).
+    if (dir === "up") bandUpdate.pendingUp = firebase.firestore.FieldValue.increment(-1);
+    if (dir === "down") bandUpdate.pendingDown = firebase.firestore.FieldValue.increment(-1);
+    tx.update(bandRef, bandUpdate);
+  });
 }
 
 async function castVote(band, direction) {
@@ -879,10 +945,10 @@ function setAdminUI(loggedIn, label) {
   document.getElementById("backup-panel").classList.toggle("hidden", !loggedIn);
   document.getElementById("close-week-panel").classList.toggle("hidden", !loggedIn);
   if (loggedIn) {
-    toggleBtn.textContent = `🔓 Sair (${label})`;
+    toggleBtn.textContent = `Sair (${label})`;
     toggleBtn.classList.add("is-logged-in");
   } else {
-    toggleBtn.textContent = "🔒 Admin";
+    toggleBtn.textContent = "Admin";
     toggleBtn.classList.remove("is-logged-in");
   }
 }

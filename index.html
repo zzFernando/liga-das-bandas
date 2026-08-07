@@ -4,12 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Liga das Bandas</title>
+<meta name="description" content="Ranking de bandas independentes por votos dos ouvintes. Vote nas suas favoritas — o ranking fecha e atualiza toda semana.">
+<meta name="theme-color" content="#14532d">
+<link rel="canonical" href="https://ligadasbandas.com/">
+<!-- Open Graph / compartilhamento (WhatsApp, Insta, Twitter, Facebook) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Liga das Bandas">
+<meta property="og:title" content="Liga das Bandas">
+<meta property="og:description" content="Ranking de bandas independentes por votos dos ouvintes. Vote nas suas favoritas — o ranking fecha toda semana.">
+<meta property="og:url" content="https://ligadasbandas.com/">
+<meta property="og:image" content="https://ligadasbandas.com/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Liga das Bandas — ranking de bandas por votos">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Liga das Bandas">
+<meta name="twitter:description" content="Ranking de bandas independentes por votos dos ouvintes. Vote nas suas favoritas — o ranking fecha toda semana.">
+<meta name="twitter:image" content="https://ligadasbandas.com/og-image.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
-  <button id="admin-toggle-btn" type="button" class="admin-toggle-btn">🔒 Admin</button>
-  <h1>🎸 Liga das Bandas</h1>
+  <button id="admin-toggle-btn" type="button" class="admin-toggle-btn">Admin</button>
+  <h1>Liga das Bandas</h1>
   <p class="subtitle">Ranking por votos dos ouvintes — Série A a D e Divisão de Acesso</p>
 </header>
 
@@ -45,15 +66,15 @@
 <main>
   <section class="panel add-band-panel admin-only hidden" id="add-band-panel">
     <h2>Adicionar banda</h2>
-    <button type="button" id="update-spotify-btn" title="Preencher foto e link do Spotify (e YouTube de busca)">🟢 Atualizar Spotify</button>
-    <button type="button" id="update-lastfm-btn" title="Preencher gênero, ouvintes e link do Last.fm">🔴 Atualizar Last.fm</button>
+    <button type="button" id="update-spotify-btn" title="Preencher foto e link do Spotify (e YouTube de busca)">Atualizar Spotify</button>
+    <button type="button" id="update-lastfm-btn" title="Preencher gênero, ouvintes e link do Last.fm">Atualizar Last.fm</button>
     <form id="band-form" autocomplete="off">
       <input type="text" id="band-name" placeholder="Nome da banda" required>
       <input type="url" id="band-image" placeholder="Link da imagem/capa (opcional)">
       <input type="url" id="band-spotify" placeholder="Link do Spotify (opcional)">
       <input type="url" id="band-youtube" placeholder="Link do YouTube (opcional)">
       <input type="text" id="band-instagram" placeholder="Instagram, sem @ (opcional)">
-      <button type="button" id="autofill-btn" title="Preencher Spotify e YouTube a partir do nome">🔮 Auto-preencher</button>
+      <button type="button" id="autofill-btn" title="Preencher Spotify e YouTube a partir do nome">Auto-preencher</button>
       <button type="submit">Adicionar</button>
     </form>
     <p class="hint">Já existe uma banda com esse nome? Ela é atualizada em vez de duplicada.</p>
@@ -68,6 +89,12 @@
   <section class="update-dates">
     <span>Última atualização: <strong id="last-update-date">—</strong></span>
     <span>Próxima atualização: <strong id="next-update-date">—</strong></span>
+  </section>
+
+  <section class="howto">
+    <span>Vote <strong>&uarr;</strong> pra subir ou <strong>&darr;</strong> pra descer</span>
+    <span>O ranking fecha e atualiza <strong>todo domingo</strong></span>
+    <span>Vote com consciência</span>
   </section>
 
   <section class="highlights" id="highlights"></section>

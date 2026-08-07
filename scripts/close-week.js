@@ -39,25 +39,34 @@ async function main() {
     return;
   }
 
-  // Firestore permite 500 escritas por batch; a liga tem menos que isso, mas
-  // paginamos por segurança caso cresça.
+  const now = admin.firestore.Timestamp.now();
   const docs = snap.docs;
-  for (let i = 0; i < docs.length; i += 400) {
+
+  // Novos scores + posições finais (pra guardar no histórico de cada banda).
+  const scored = docs.map((doc) => {
+    const b = doc.data();
+    const newScore = (b.score || 0) + VOTE_WEIGHT * ((b.pendingUp || 0) - (b.pendingDown || 0));
+    return { doc, b, newScore };
+  });
+  scored.sort((a, b) => b.newScore - a.newScore || (b.b.listeners || 0) - (a.b.listeners || 0));
+  const posMap = new Map(scored.map((x, i) => [x.doc.id, i + 1]));
+
+  // Firestore permite 500 escritas por batch; paginamos por segurança.
+  for (let i = 0; i < scored.length; i += 400) {
     const batch = db.batch();
-    docs.slice(i, i + 400).forEach((doc) => {
-      const b = doc.data();
-      const delta = VOTE_WEIGHT * ((b.pendingUp || 0) - (b.pendingDown || 0));
+    scored.slice(i, i + 400).forEach(({ doc, b, newScore }) => {
+      const history = [...(b.history || []), { t: now, pos: posMap.get(doc.id), score: newScore }].slice(-30);
       batch.update(doc.ref, {
         previousScore: b.score || 0,
-        score: (b.score || 0) + delta,
+        score: newScore,
         pendingUp: 0,
         pendingDown: 0,
+        history,
       });
     });
     await batch.commit();
   }
 
-  const now = admin.firestore.Timestamp.now();
   const next = admin.firestore.Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000);
   await db.collection("meta").doc("ranking").update({ lastUpdate: now, nextUpdate: next });
 

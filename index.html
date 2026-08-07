@@ -10,7 +10,7 @@
 <header class="topbar">
   <button id="admin-toggle-btn" type="button" class="admin-toggle-btn">🔒 Admin</button>
   <h1>🎸 Liga das Bandas</h1>
-  <p class="subtitle">Classificação por ouvintes mensais do Spotify — Série A, B e C</p>
+  <p class="subtitle">Ranking por votos dos ouvintes — Série A a D e Divisão de Acesso</p>
 </header>
 
 <div id="login-modal" class="modal-overlay hidden">
@@ -26,39 +26,61 @@
   </form>
 </div>
 
+<div id="edit-modal" class="modal-overlay hidden">
+  <form id="edit-form" class="login-card edit-card" autocomplete="off">
+    <h2>Editar banda</h2>
+    <input type="text" id="edit-name" placeholder="Nome da banda" required>
+    <input type="url" id="edit-image" placeholder="Link da imagem/capa (opcional)">
+    <input type="url" id="edit-spotify" placeholder="Link do Spotify (opcional)">
+    <input type="url" id="edit-youtube" placeholder="Link do YouTube (opcional)">
+    <input type="text" id="edit-instagram" placeholder="Instagram, sem @ (opcional)">
+    <div class="login-actions">
+      <button type="submit">Salvar</button>
+      <button type="button" id="edit-cancel-btn" class="secondary">Cancelar</button>
+    </div>
+    <p id="edit-error" class="login-error hidden">Já existe outra banda com esse nome.</p>
+  </form>
+</div>
+
 <main>
   <section class="panel add-band-panel admin-only hidden" id="add-band-panel">
-    <h2>Adicionar / Atualizar banda</h2>
+    <h2>Adicionar banda</h2>
+    <button type="button" id="update-spotify-btn" title="Preencher foto e link do Spotify (e YouTube de busca)">🟢 Atualizar Spotify</button>
+    <button type="button" id="update-lastfm-btn" title="Preencher gênero, ouvintes e link do Last.fm">🔴 Atualizar Last.fm</button>
     <form id="band-form" autocomplete="off">
       <input type="text" id="band-name" placeholder="Nome da banda" required>
-      <input type="number" id="band-listeners" placeholder="Ouvintes mensais" min="0" step="1" required>
+      <input type="url" id="band-image" placeholder="Link da imagem/capa (opcional)">
+      <input type="url" id="band-spotify" placeholder="Link do Spotify (opcional)">
+      <input type="url" id="band-youtube" placeholder="Link do YouTube (opcional)">
+      <input type="text" id="band-instagram" placeholder="Instagram, sem @ (opcional)">
+      <button type="button" id="autofill-btn" title="Preencher Spotify e YouTube a partir do nome">🔮 Auto-preencher</button>
       <button type="submit">Adicionar</button>
     </form>
     <p class="hint">Já existe uma banda com esse nome? Ela é atualizada em vez de duplicada.</p>
   </section>
 
+  <section class="panel admin-only hidden" id="close-week-panel">
+    <h2>Atualização semanal</h2>
+    <p class="hint">Aplica os votos acumulados da semana ao ranking e reinicia a contagem.</p>
+    <button id="close-week-btn" type="button">Fechar semana e atualizar ranking</button>
+    <p class="hint">Define a pontuação de largada de cada banda pela popularidade (ouvintes). Sobrescreve os scores atuais.</p>
+    <button id="seed-ranking-btn" type="button">Semear ranking pelos ouvintes</button>
+  </section>
+
+  <section class="update-dates">
+    <span>Última atualização: <strong id="last-update-date">—</strong></span>
+    <span>Próxima atualização: <strong id="next-update-date">—</strong></span>
+  </section>
+
+  <section class="highlights" id="highlights"></section>
+
   <section class="stats" id="stats"></section>
 
-  <section class="tier" id="tier-a">
-    <h2 class="tier-title tier-a-title">Série A</h2>
-    <div class="table-wrap"><table class="liga-table"><thead>
-      <tr><th>Pos</th><th>Banda</th><th>Ouvintes mensais</th><th></th></tr>
-    </thead><tbody id="tbody-a"></tbody></table></div>
+  <section class="filters">
+    <input type="text" id="search-input" placeholder="Buscar banda...">
   </section>
 
-  <section class="tier" id="tier-b">
-    <h2 class="tier-title tier-b-title">Série B</h2>
-    <div class="table-wrap"><table class="liga-table"><thead>
-      <tr><th>Pos</th><th>Banda</th><th>Ouvintes mensais</th><th></th></tr>
-    </thead><tbody id="tbody-b"></tbody></table></div>
-  </section>
-
-  <section class="tier" id="tier-c">
-    <h2 class="tier-title tier-c-title">Série C</h2>
-    <div class="table-wrap"><table class="liga-table"><thead>
-      <tr><th>Pos</th><th>Banda</th><th>Ouvintes mensais</th><th></th></tr>
-    </thead><tbody id="tbody-c"></tbody></table></div>
-  </section>
+  <div id="tiers-container"></div>
 
   <section class="legend">
     <span class="legend-item"><i class="dot g4"></i> G4 — zona de acesso</span>
@@ -72,7 +94,7 @@
       <button id="import-btn" type="button">Importar JSON</button>
       <input type="file" id="import-file" accept="application/json" hidden>
     </div>
-    <p class="hint">Os dados ficam salvos no navegador (localStorage). Exporte de vez em quando pra não perder nada.</p>
+    <p class="hint">Os dados ficam salvos no banco (Firestore), compartilhados entre todos. Exporte de vez em quando pra ter um backup local.</p>
   </section>
 </main>
 

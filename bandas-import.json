@@ -1,0 +1,692 @@
+{
+  "bands": [
+    {
+      "name": "Terno Rei",
+      "listeners": 220964
+    },
+    {
+      "name": "Pullovers",
+      "listeners": 182263
+    },
+    {
+      "name": "Walfredo Em Busca Da Simbiose",
+      "listeners": 70524
+    },
+    {
+      "name": "Cidade Dormitório",
+      "listeners": 68519
+    },
+    {
+      "name": "Boogarins",
+      "listeners": 67063
+    },
+    {
+      "name": "Varanda",
+      "listeners": 64450
+    },
+    {
+      "name": "Sophia Chablau E Uma Enorme Perda De Tempo",
+      "listeners": 62247
+    },
+    {
+      "name": "Tangolo Mangos",
+      "listeners": 59852
+    },
+    {
+      "name": "Codinome Winchester",
+      "listeners": 53963
+    },
+    {
+      "name": "Chão De Taco",
+      "listeners": 47328
+    },
+    {
+      "name": "Carne Doce",
+      "listeners": 46622
+    },
+    {
+      "name": "Bella E O Olmo Da Bruxa",
+      "listeners": 44464
+    },
+    {
+      "name": "Lupe De Lupe",
+      "listeners": 42645
+    },
+    {
+      "name": "Besouro Mulher",
+      "listeners": 42381
+    },
+    {
+      "name": "PLUMA",
+      "listeners": 36722
+    },
+    {
+      "name": "Terraplana",
+      "listeners": 35251
+    },
+    {
+      "name": "Medulla",
+      "listeners": 35153
+    },
+    {
+      "name": "Exclusive Os Cabides",
+      "listeners": 31616
+    },
+    {
+      "name": "Gorduratrans",
+      "listeners": 30920
+    },
+    {
+      "name": "Jambu",
+      "listeners": 29992
+    },
+    {
+      "name": "HOZE",
+      "listeners": 29430
+    },
+    {
+      "name": "Pelados",
+      "listeners": 28405
+    },
+    {
+      "name": "Adorável Clichê",
+      "listeners": 27922
+    },
+    {
+      "name": "Chococorn And The Sugarcanes",
+      "listeners": 26123
+    },
+    {
+      "name": "Quem É Você Alice?",
+      "listeners": 24032
+    },
+    {
+      "name": "Isotopxs",
+      "listeners": 23774
+    },
+    {
+      "name": "Não Existe Saudade Em Inglês",
+      "listeners": 20707
+    },
+    {
+      "name": "Buenos Vampiros",
+      "listeners": 20686
+    },
+    {
+      "name": "Jovens Ateus",
+      "listeners": 19832
+    },
+    {
+      "name": "Ludovic",
+      "listeners": 18594
+    },
+    {
+      "name": "Não Ao Futebol Moderno",
+      "listeners": 18192
+    },
+    {
+      "name": "Origami Aquém",
+      "listeners": 17645
+    },
+    {
+      "name": "Morro Fuji",
+      "listeners": 15005
+    },
+    {
+      "name": "Soprú",
+      "listeners": 14492
+    },
+    {
+      "name": "Quarto Vazio",
+      "listeners": 14113
+    },
+    {
+      "name": "Eliminadorzinho",
+      "listeners": 13263
+    },
+    {
+      "name": "Jonabug",
+      "listeners": 12999
+    },
+    {
+      "name": "Paira",
+      "listeners": 11801
+    },
+    {
+      "name": "Wasted Kidds",
+      "listeners": 11727
+    },
+    {
+      "name": "A Casa Mais Estranha Não Tem Número",
+      "listeners": 11639
+    },
+    {
+      "name": "O Cinza",
+      "listeners": 11504
+    },
+    {
+      "name": "Magnólia",
+      "listeners": 11354
+    },
+    {
+      "name": "Quedalivre",
+      "listeners": 11331
+    },
+    {
+      "name": "Juia",
+      "listeners": 9959
+    },
+    {
+      "name": "Sonhos Tomam Conta",
+      "listeners": 9548
+    },
+    {
+      "name": "Clara Bicho",
+      "listeners": 9407
+    },
+    {
+      "name": "A Terra Vai Se Tornar Um Planeta Inabitável",
+      "listeners": 8858
+    },
+    {
+      "name": "Pedro Lanches",
+      "listeners": 8825
+    },
+    {
+      "name": "Insira Aqui",
+      "listeners": 8747
+    },
+    {
+      "name": "Rugby Brasileiro",
+      "listeners": 7422
+    },
+    {
+      "name": "Boasorte",
+      "listeners": 6866
+    },
+    {
+      "name": "Ursamenor",
+      "listeners": 6382
+    },
+    {
+      "name": "Stela",
+      "listeners": 6025
+    },
+    {
+      "name": "Marrakesh",
+      "listeners": 5606
+    },
+    {
+      "name": "Visitas Póstumas",
+      "listeners": 4729
+    },
+    {
+      "name": "Ocaradometal",
+      "listeners": 4251
+    },
+    {
+      "name": "Ventre",
+      "listeners": 3811
+    },
+    {
+      "name": "Glover.",
+      "listeners": 3534
+    },
+    {
+      "name": "Ouriço",
+      "listeners": 3494
+    },
+    {
+      "name": "Capote",
+      "listeners": 3316
+    },
+    {
+      "name": "Virtudes Fantasmas",
+      "listeners": 3315
+    },
+    {
+      "name": "Hateyourmusic",
+      "listeners": 3213
+    },
+    {
+      "name": "Mariposa Alice",
+      "listeners": 3150
+    },
+    {
+      "name": "Quasar",
+      "listeners": 3122
+    },
+    {
+      "name": "Cecília Já Não É + A Mesma",
+      "listeners": 3075
+    },
+    {
+      "name": "Zepelim E O Sopro Do Cão",
+      "listeners": 3061
+    },
+    {
+      "name": "El Toro Fuerte",
+      "listeners": 2966
+    },
+    {
+      "name": "Sem Carne De Texugo",
+      "listeners": 2897
+    },
+    {
+      "name": "Quebec",
+      "listeners": 2783
+    },
+    {
+      "name": "Personas",
+      "listeners": 2739
+    },
+    {
+      "name": "Mães Católicas",
+      "listeners": 2681
+    },
+    {
+      "name": "Polara",
+      "listeners": 2681
+    },
+    {
+      "name": "Tom Gangue",
+      "listeners": 2668
+    },
+    {
+      "name": "Império Contra-Ataca!",
+      "listeners": 2659
+    },
+    {
+      "name": "Planoreal",
+      "listeners": 2458
+    },
+    {
+      "name": "Hidio",
+      "listeners": 2214
+    },
+    {
+      "name": "Metonímia",
+      "listeners": 2178
+    },
+    {
+      "name": "Asterisma",
+      "listeners": 1964
+    },
+    {
+      "name": "Cidade Azul",
+      "listeners": 1857
+    },
+    {
+      "name": "Cidade Curupira",
+      "listeners": 1603
+    },
+    {
+      "name": "Ana Paia",
+      "listeners": 1579
+    },
+    {
+      "name": "Quase Morte",
+      "listeners": 1429
+    },
+    {
+      "name": "Saudades Futebol Clube",
+      "listeners": 1252
+    },
+    {
+      "name": "Freiya",
+      "listeners": 1118
+    },
+    {
+      "name": "Preferia Não",
+      "listeners": 1088
+    },
+    {
+      "name": "Giz.",
+      "listeners": 1085
+    },
+    {
+      "name": "Maquinas",
+      "listeners": 1077
+    },
+    {
+      "name": "Sexta É O Jazz",
+      "listeners": 1076
+    },
+    {
+      "name": "Ovo Frito",
+      "listeners": 1016
+    },
+    {
+      "name": "Marianaa",
+      "listeners": 1012
+    },
+    {
+      "name": "Nigéria Futebol Clube",
+      "listeners": 1004
+    },
+    {
+      "name": "Erro Coração",
+      "listeners": 943
+    },
+    {
+      "name": "Somacores",
+      "listeners": 860
+    },
+    {
+      "name": "Projeto Hare",
+      "listeners": 841
+    },
+    {
+      "name": "De Carne E Flor",
+      "listeners": 803
+    },
+    {
+      "name": "Mitocôndria",
+      "listeners": 794
+    },
+    {
+      "name": "Blush",
+      "listeners": 760
+    },
+    {
+      "name": "Vinca Major",
+      "listeners": 752
+    },
+    {
+      "name": "Ego Exílio",
+      "listeners": 727
+    },
+    {
+      "name": "Escadacima",
+      "listeners": 634
+    },
+    {
+      "name": "Híbalta",
+      "listeners": 585
+    },
+    {
+      "name": "Fumaça Urbana",
+      "listeners": 509
+    },
+    {
+      "name": "Chico Balanceado",
+      "listeners": 472
+    },
+    {
+      "name": ".Pontonemo.",
+      "listeners": 462
+    },
+    {
+      "name": "Recreio",
+      "listeners": 397
+    },
+    {
+      "name": "Lunoaprendiz",
+      "listeners": 374
+    },
+    {
+      "name": "Pesca Esportiva",
+      "listeners": 358
+    },
+    {
+      "name": "Banda Beto",
+      "listeners": 339
+    },
+    {
+      "name": "Campus",
+      "listeners": 312
+    },
+    {
+      "name": "Amélia Nos Observa",
+      "listeners": 310
+    },
+    {
+      "name": "Boa Noite Jorge",
+      "listeners": 307
+    },
+    {
+      "name": "A Virgo",
+      "listeners": 304
+    },
+    {
+      "name": "Sutiã Rasgado",
+      "listeners": 278
+    },
+    {
+      "name": "As Tolices De Beatrice",
+      "listeners": 255
+    },
+    {
+      "name": "Sherezade",
+      "listeners": 238
+    },
+    {
+      "name": "Aster",
+      "listeners": 237
+    },
+    {
+      "name": "Suco Digital",
+      "listeners": 235
+    },
+    {
+      "name": "Lucas Hanke",
+      "listeners": 229
+    },
+    {
+      "name": "Sonho Líquido",
+      "listeners": 224
+    },
+    {
+      "name": "Final De Tarde",
+      "listeners": 223
+    },
+    {
+      "name": "Alívio Cômico",
+      "listeners": 211
+    },
+    {
+      "name": "Funérea",
+      "listeners": 196
+    },
+    {
+      "name": "Paralelo Ao Fim",
+      "listeners": 189
+    },
+    {
+      "name": "Noite Só",
+      "listeners": 187
+    },
+    {
+      "name": "Trash No Star",
+      "listeners": 182
+    },
+    {
+      "name": "Transmissão Beta",
+      "listeners": 178
+    },
+    {
+      "name": "Texuga",
+      "listeners": 169
+    },
+    {
+      "name": "Lítio Lunar",
+      "listeners": 159
+    },
+    {
+      "name": "Adaga",
+      "listeners": 157
+    },
+    {
+      "name": "Metanóia",
+      "listeners": 157
+    },
+    {
+      "name": "Viúva Fantasma",
+      "listeners": 157
+    },
+    {
+      "name": "Välika",
+      "listeners": 151
+    },
+    {
+      "name": "Alopecia Androgina",
+      "listeners": 148
+    },
+    {
+      "name": "Hibizco",
+      "listeners": 129
+    },
+    {
+      "name": "Quarto Ao Lado",
+      "listeners": 125
+    },
+    {
+      "name": "Cabala",
+      "listeners": 116
+    },
+    {
+      "name": "Diego Xavier",
+      "listeners": 113
+    },
+    {
+      "name": "Scopo",
+      "listeners": 111
+    },
+    {
+      "name": "Burning Tangerine",
+      "listeners": 109
+    },
+    {
+      "name": "Cumbuca",
+      "listeners": 107
+    },
+    {
+      "name": "Guioak",
+      "listeners": 107
+    },
+    {
+      "name": "ALLY!",
+      "listeners": 103
+    },
+    {
+      "name": "Descartes",
+      "listeners": 95
+    },
+    {
+      "name": "Volte Anabel",
+      "listeners": 90
+    },
+    {
+      "name": "Aster Inc.",
+      "listeners": 86
+    },
+    {
+      "name": "Projeto Shaun",
+      "listeners": 86
+    },
+    {
+      "name": "Quarto Imaginário",
+      "listeners": 79
+    },
+    {
+      "name": "Caridea",
+      "listeners": 69
+    },
+    {
+      "name": "Templo De Sophia",
+      "listeners": 65
+    },
+    {
+      "name": "Meu Lado Caótico",
+      "listeners": 61
+    },
+    {
+      "name": "Quarto Sensorial",
+      "listeners": 54
+    },
+    {
+      "name": "O Concreto",
+      "listeners": 53
+    },
+    {
+      "name": "Isopor",
+      "listeners": 44
+    },
+    {
+      "name": "Desmonte",
+      "listeners": 41
+    },
+    {
+      "name": "Bardozz",
+      "listeners": 39
+    },
+    {
+      "name": "Cancelli",
+      "listeners": 39
+    },
+    {
+      "name": "Desculpa",
+      "listeners": 39
+    },
+    {
+      "name": "Lapso",
+      "listeners": 36
+    },
+    {
+      "name": "Jubarte Elevador",
+      "listeners": 34
+    },
+    {
+      "name": "Os Aciderais",
+      "listeners": 34
+    },
+    {
+      "name": "Sopa",
+      "listeners": 31
+    },
+    {
+      "name": "Hebert Moah",
+      "listeners": 30
+    },
+    {
+      "name": "Oitava Síntese",
+      "listeners": 30
+    },
+    {
+      "name": "Cor Do Invisível",
+      "listeners": 26
+    },
+    {
+      "name": "Cine Baltimore",
+      "listeners": 23
+    },
+    {
+      "name": "O Terraço",
+      "listeners": 19
+    },
+    {
+      "name": "Toró",
+      "listeners": 18
+    },
+    {
+      "name": "Andreas Solrak",
+      "listeners": 17
+    },
+    {
+      "name": "Maeve",
+      "listeners": 14
+    },
+    {
+      "name": "Had.rr",
+      "listeners": 12
+    },
+    {
+      "name": "Angry Daze",
+      "listeners": 9
+    },
+    {
+      "name": "Tainá De Brito",
+      "listeners": 6
+    }
+  ]
+}

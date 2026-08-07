@@ -9,10 +9,19 @@
       "firebase.json",
       "firestore.rules",
       "firestore.indexes.json",
+      "bandas-import.json",
       ".git/**",
       "**/.*",
       "**/node_modules/**",
       "creds.json"
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(html|js|css)",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, max-age=0" }
+        ]
+      }
     ]
   }
 }

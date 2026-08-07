@@ -11,9 +11,76 @@ service cloud.firestore {
         ];
     }
 
+    function isVoter() {
+      return request.auth != null;
+    }
+
+    function isValidVoteAdjustment() {
+      let before = resource.data;
+      let after = request.resource.data;
+      let upDelta = after.pendingUp - before.pendingUp;
+      let downDelta = after.pendingDown - before.pendingDown;
+      return isVoter()
+        && after.diff(before).affectedKeys().hasOnly(['pendingUp', 'pendingDown'])
+        && upDelta >= -1 && upDelta <= 1
+        && downDelta >= -1 && downDelta <= 1
+        && !(upDelta == 0 && downDelta == 0)
+        && !(upDelta == 1 && downDelta == 1)
+        && !(upDelta == -1 && downDelta == -1);
+    }
+
     match /bands/{bandId} {
       allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || isValidVoteAdjustment();
+
+      match /votes/{uid} {
+        allow read: if true;
+        allow create: if request.auth != null
+          && request.auth.uid == uid
+          && request.resource.data.uid == uid
+          && request.resource.data.bandId == bandId;
+        allow update: if request.auth != null
+          && request.auth.uid == uid
+          && request.resource.data.uid == uid
+          && request.resource.data.bandId == bandId
+          && request.resource.data.direction != resource.data.direction;
+        allow delete: if isAdmin();
+      }
+    }
+
+    match /voters/{uid} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == uid);
+
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.dailyCount == 1
+        && request.resource.data.windowStart is timestamp
+        && request.resource.data.windowStart <= request.time;
+
+      allow update: if request.auth != null && request.auth.uid == uid && (
+        (request.time < resource.data.windowStart + duration.value(1, 'd')
+          && request.resource.data.dailyCount == resource.data.dailyCount + 1
+          && request.resource.data.dailyCount <= 40
+          && request.resource.data.windowStart == resource.data.windowStart)
+        || (request.time >= resource.data.windowStart + duration.value(1, 'd')
+          && request.resource.data.dailyCount == 1
+          && request.resource.data.windowStart is timestamp
+          && request.resource.data.windowStart <= request.time)
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    match /meta/{docId} {
+      allow read: if true;
       allow write: if isAdmin();
+    }
+
+    // Collection group queries (buscar votos em todas as bandas de uma vez, ex: "meus votos"
+    // e "votos de hoje") precisam dessa regra declarada com wildcard recursivo no nível raiz;
+    // a regra aninhada dentro de /bands/{bandId}/votes só cobre leitura de um doc específico.
+    match /{path=**}/votes/{voteId} {
+      allow read: if true;
     }
   }
 }

@@ -1,5 +1,5 @@
 const SERIES_CONFIG = [
-  { key: "a", label: "Série A", color: "#14532d" },
+  { key: "a", label: "Série A", color: "#245c3a" },
   { key: "b", label: "Série B", color: "#1d4ed8" },
   { key: "c", label: "Série C", color: "#7c3aed" },
   { key: "d", label: "Série D", color: "#be185d" },

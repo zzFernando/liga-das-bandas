@@ -16,18 +16,19 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #14161a;
-    --panel-bg: #1d2025;
-    --text: #eef0f3;
-    --text-muted: #9aa1ab;
-    --border: #2d313a;
-    --header-bg: #0f3d21;
-    --header-text: #f2f5f2;
-    --g4-bg: rgba(34, 139, 87, 0.18);
-    --g4-border: #2fa860;
-    --z4-bg: rgba(220, 60, 60, 0.16);
-    --z4-border: #e05252;
-    --row-hover: rgba(255, 255, 255, 0.04);
+    --bg: #101214;
+    --panel-bg: #191c20;
+    --text: #f1f3f2;
+    --text-muted: #a6adb4;
+    --border: #30353a;
+    --header-bg: #102f21;
+    --header-text: #f1f3f2;
+    --accent: #245c3a;
+    --g4-bg: rgba(36, 92, 58, 0.22);
+    --g4-border: #245c3a;
+    --z4-bg: rgba(154, 91, 91, 0.16);
+    --z4-border: #9a5b5b;
+    --row-hover: rgba(255, 255, 255, 0.03);
   }
 }
 
@@ -47,12 +48,12 @@ body {
   text-align: center;
 }
 .topbar-head {
-  position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: center;
   min-height: 34px;
 }
+.topbar h1 { grid-column: 2; }
 
 .topbar h1 {
   margin: 0;
@@ -84,8 +85,8 @@ body {
   color: #d7e6db;
 }
 .cb-info strong { color: #fff; font-weight: 650; }
-.cb-info .cb-up { color: #6ee7a0; }
-.cb-info .cb-down { color: #f9a8a4; }
+.cb-info .cb-up { color: #8fb99a; }
+.cb-info .cb-down { color: #cf9d9d; }
 .cb-info .cb-muted { color: #b9cdc0; }
 .cb-info .cb-sep { color: rgba(255, 255, 255, 0.35); font-style: normal; }
 
@@ -117,10 +118,8 @@ body {
 .topbar { position: relative; }
 
 .admin-toggle-btn {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  grid-column: 3;
+  justify-self: end;
   background: transparent;
   border-color: rgba(255, 255, 255, 0.5);
   color: #fff;
@@ -491,8 +490,8 @@ table.liga-table {
   line-height: 1.2;
   margin-top: 1px;
 }
-.rank-move.up { color: #22c55e; }
-.rank-move.down { color: #ef4444; }
+.rank-move.up { color: #6f9c7e; }
+.rank-move.down { color: #b07d7d; }
 .liga-table td.actions { white-space: nowrap; text-align: right; }
 .liga-table td.image-col { width: 72px; }
 .liga-table td.vote-col { white-space: nowrap; }
@@ -530,22 +529,21 @@ table.liga-table {
   padding: 1px 7px;
   border-radius: 999px;
   background: rgba(34, 139, 87, 0.16);
-  color: #16a34a;
+  color: #3f7d52;
   text-transform: capitalize;
 }
 
 .band-loc {
   padding: 1px 7px;
   border-radius: 999px;
-  background: rgba(56, 132, 255, 0.16);
-  color: #2f6fed;
+  background: rgba(56, 132, 255, 0.14);
+  color: #45699b;
   white-space: nowrap;
 }
 
-
 @media (prefers-color-scheme: dark) {
-  .band-genre { color: #3ddc84; }
-  .band-loc { color: #7aa8ff; }
+  .band-genre { background: #1c3025; color: #8fb99a; }
+  .band-loc { background: #1d2938; color: #91add0; }
 }
 
 .vote-cell {
@@ -570,21 +568,22 @@ table.liga-table {
   transition: transform 0.08s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
 
+.vote-btn { color: #8a97a6; }
 .vote-btn:hover { transform: translateY(-1px); }
 .vote-btn:active { transform: scale(0.92); }
-.vote-btn.vote-up:hover { border-color: #22c55e; color: #22c55e; }
-.vote-btn.vote-down:hover { border-color: #ef4444; color: #ef4444; }
+.vote-btn.vote-up:hover { border-color: #8fb99a; color: #b6c8d8; }
+.vote-btn.vote-down:hover { border-color: #9a5b5b; color: #b6c8d8; }
 
-/* Voto escolhido: preenchido na cor da direção. Clique de novo remove. */
+/* Voto escolhido: verde-floresta (identidade) pra subir, vermelho suave pra descer. */
 .vote-btn.vote-up.vote-chosen {
-  background: #22c55e;
-  border-color: #22c55e;
-  color: #fff;
+  background: #245c3a;
+  border-color: #2f7049;
+  color: #f1f3f2;
 }
 .vote-btn.vote-down.vote-chosen {
-  background: #ef4444;
-  border-color: #ef4444;
-  color: #fff;
+  background: #7d4444;
+  border-color: #9a5b5b;
+  color: #f1f3f2;
 }
 
 .band-icons {

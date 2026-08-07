@@ -35,15 +35,30 @@
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="manifest" href="/manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
-  <button id="admin-toggle-btn" type="button" class="admin-toggle-btn">Admin</button>
-  <h1>Liga das Bandas</h1>
+  <div class="topbar-head">
+    <h1>Liga das Bandas</h1>
+    <button id="admin-toggle-btn" type="button" class="admin-toggle-btn">Login</button>
+  </div>
   <div class="band-carousel" id="band-carousel" aria-hidden="true">
     <div class="carousel-track" id="carousel-track"></div>
   </div>
+  <div class="cb-filters header-filters">
+    <input type="text" id="search-input" placeholder="Buscar" aria-label="Buscar banda">
+    <select id="genre-filter">
+      <option value="">Gênero</option>
+    </select>
+    <select id="uf-filter">
+      <option value="">Estado</option>
+    </select>
+  </div>
+  <div class="cb-info" id="cb-info"></div>
 </header>
 
 <div id="login-modal" class="modal-overlay hidden">
@@ -68,6 +83,7 @@
     <input type="url" id="edit-youtube" placeholder="Link do YouTube (opcional)">
     <input type="text" id="edit-instagram" placeholder="Instagram, sem @ (opcional)">
     <input type="text" id="edit-location" placeholder="Cidade - UF (opcional)">
+    <textarea id="edit-bio" placeholder="Bio / descrição (opcional)" rows="4"></textarea>
     <div class="login-actions">
       <button type="submit">Salvar</button>
       <button type="button" id="edit-cancel-btn" class="secondary">Cancelar</button>
@@ -126,27 +142,6 @@
     <p class="hint">Sobe/Desce/Saldo = votos acumulados desta semana (aplicados no fechamento). "Hoje" = votos novos criados hoje. Ordenado por atividade da semana.</p>
   </section>
 
-  <section class="update-dates">
-    <span>Última atualização: <strong id="last-update-date">—</strong></span>
-    <span>Próxima atualização: <strong id="next-update-date">—</strong></span>
-  </section>
-
-  <section class="howto">
-    <span>Vote <strong>&uarr;</strong> pra subir ou <strong>&darr;</strong> pra descer</span>
-    <span>O ranking fecha e atualiza <strong>todo domingo</strong></span>
-    <span>Vote com consciência</span>
-  </section>
-
-  <section class="highlights" id="highlights"></section>
-
-  <section class="stats" id="stats"></section>
-
-  <section class="filters">
-    <input type="text" id="search-input" placeholder="Buscar banda...">
-    <select id="genre-filter">
-      <option value="">Todos os gêneros</option>
-    </select>
-  </section>
 
   <div id="app-loader" class="app-loader">
     <span class="spinner"></span>

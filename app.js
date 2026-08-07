@@ -6,7 +6,6 @@ const SERIES_CONFIG = [
   { key: "acesso", label: "Divisão de Acesso", color: "#4b5563" },
 ];
 
-const DAILY_VOTE_LIMIT = 40;
 
 // Firebase Analytics (GA4). Envolvido em try pra nunca quebrar o app se bloqueado.
 let analytics = null;
@@ -25,7 +24,7 @@ function track(event, params) {
 
 let state = { bands: [] };
 let isAdmin = false;
-let filterState = { search: "", genre: "" };
+let filterState = { search: "", genre: "", uf: "" };
 let collapsedSeries = new Set(); // séries recolhidas pelo usuário
 let rankMovement = new Map(); // bandId -> quantas posições subiu(+)/desceu(-) no último fechamento
 let sessionSpotifyToken = null; // token do Spotify resolvido a partir do campo de credencial
@@ -379,6 +378,12 @@ function buildVoteCell(band) {
   return wrap;
 }
 
+// Extrai a UF do fim do local ("Cidade - SP" -> "SP"). Sem UF válida -> "".
+function bandUF(loc) {
+  const m = /-\s*([A-Z]{2})\s*$/.exec(loc || "");
+  return m ? m[1] : "";
+}
+
 function passesFilter(band) {
   const matchesSearch =
     !filterState.search || band.name.toLowerCase().includes(filterState.search);
@@ -386,11 +391,12 @@ function passesFilter(band) {
     !filterState.genre ||
     (Array.isArray(band.genres) &&
       band.genres.some((g) => g.toLowerCase() === filterState.genre.toLowerCase()));
-  return matchesSearch && matchesGenre;
+  const matchesUf = !filterState.uf || bandUF(band.location) === filterState.uf;
+  return matchesSearch && matchesGenre && matchesUf;
 }
 
 function isFiltering() {
-  return !!(filterState.search || filterState.genre);
+  return !!(filterState.search || filterState.genre || filterState.uf);
 }
 
 function refreshGenreOptions() {
@@ -401,10 +407,22 @@ function refreshGenreOptions() {
   );
   const current = select.value;
   select.innerHTML =
-    '<option value="">Todos os gêneros</option>' +
+    '<option value="">Gênero</option>' +
     genres.map((g) => `<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join("");
   if (genres.some((g) => g === current)) select.value = current;
   else filterState.genre = "";
+}
+
+function refreshUfOptions() {
+  const select = document.getElementById("uf-filter");
+  if (!select) return;
+  const ufs = [...new Set(state.bands.map((b) => bandUF(b.location)).filter(Boolean))].sort();
+  const current = select.value;
+  select.innerHTML =
+    '<option value="">Estado</option>' +
+    ufs.map((u) => `<option value="${u}">${u}</option>`).join("");
+  if (ufs.includes(current)) select.value = current;
+  else filterState.uf = "";
 }
 
 function renderTable(tbodyId, list, zoneConfig) {
@@ -495,85 +513,37 @@ function renderTable(tbodyId, list, zoneConfig) {
   return entries.length;
 }
 
-function renderStats() {
-  const statsEl = document.getElementById("stats");
-  const total = state.bands.length;
-  if (total === 0) {
-    statsEl.innerHTML = "";
-    return;
-  }
-  const leader = [...state.bands].sort(byRank)[0];
-  statsEl.innerHTML = `
-    <span><strong>${total}</strong> banda${total === 1 ? "" : "s"} na liga</span>
-    <span>Líder geral: <strong>${escapeHtml(leader.name)}</strong></span>
-  `;
-}
-
-function topVoteToday(direction) {
-  const counts = {};
-  todayVotes
-    .filter((v) => v.direction === direction)
-    .forEach((v) => {
-      counts[v.bandId] = (counts[v.bandId] || 0) + 1;
-    });
-  let best = null;
-  Object.entries(counts).forEach(([bandId, count]) => {
-    if (!best || count > best.count) best = { bandId, count };
-  });
-  return best;
-}
-
-function bandById(id) {
-  return state.bands.find((b) => b.id === id);
-}
-
-function renderHighlights() {
-  const el = document.getElementById("highlights");
-  if (state.bands.length === 0) {
-    el.innerHTML = "";
-    return;
-  }
-
-  const cards = [];
-
-  // Baseado no movimento do último fechamento (score vs. semana anterior).
-  const delta = (b) => (b.score || 0) - (b.previousScore || 0);
-  const riser = [...state.bands].sort((a, b) => delta(b) - delta(a))[0];
-  if (riser && delta(riser) > 0) {
-    cards.push({ label: "Maior alta na última atualização", name: riser.name, value: `+${delta(riser)}` });
-  }
-
-  const faller = [...state.bands].sort((a, b) => delta(a) - delta(b))[0];
-  if (faller && delta(faller) < 0) {
-    cards.push({ label: "Maior queda na última atualização", name: faller.name, value: `${delta(faller)}` });
-  }
-
-  if (cards.length === 0) {
-    el.innerHTML = "";
-    return;
-  }
-
-  el.innerHTML = cards
-    .map(
-      (c) => `
-      <div class="highlight-card">
-        <span class="highlight-label">${escapeHtml(c.label)}</span>
-        <span class="highlight-name">${escapeHtml(c.name)}</span>
-        ${c.value ? `<span class="highlight-value">${escapeHtml(c.value)}</span>` : ""}
-      </div>
-    `
-    )
-    .join("");
-}
-
 function formatDate(ts) {
   if (!ts || typeof ts.toDate !== "function") return "—";
   return ts.toDate().toLocaleDateString("pt-BR");
 }
 
-function renderUpdateDates() {
-  document.getElementById("last-update-date").textContent = formatDate(metaState.lastUpdate);
-  document.getElementById("next-update-date").textContent = formatDate(metaState.nextUpdate);
+// Linha compacta de contexto: contagem, líder, maior alta/queda e próxima atualização.
+function renderControlBox() {
+  const el = document.getElementById("cb-info");
+  if (!el) return;
+  if (!state.bands.length) {
+    el.innerHTML = "";
+    return;
+  }
+  const leader = [...state.bands].sort(byRank)[0];
+  const delta = (b) => (b.score || 0) - (b.previousScore || 0);
+  const riser = [...state.bands].sort((a, b) => delta(b) - delta(a))[0];
+  const faller = [...state.bands].sort((a, b) => delta(a) - delta(b))[0];
+
+  const parts = [];
+  if (leader) parts.push(`<span>Líder <strong>${escapeHtml(leader.name)}</strong></span>`);
+  if (riser && delta(riser) > 0)
+    parts.push(`<span class="cb-up">&uarr; ${escapeHtml(riser.name)} +${delta(riser)}</span>`);
+  if (faller && delta(faller) < 0)
+    parts.push(`<span class="cb-down">&darr; ${escapeHtml(faller.name)} ${delta(faller)}</span>`);
+  parts.push(`<span class="cb-muted">fecha sexta 18h · próx. <strong>${formatDate(metaState.nextUpdate)}</strong></span>`);
+
+  const html = parts.join('<i class="cb-sep">·</i>');
+  if (el.dataset.html !== html) {
+    el.innerHTML = html;
+    el.dataset.html = html;
+  }
 }
 
 // Movimento no ranking global: compara a posição atual (score) com a de antes
@@ -596,6 +566,7 @@ function render() {
   const filtering = isFiltering();
   computeRankMovement();
   refreshGenreOptions();
+  refreshUfOptions();
   SERIES_CONFIG.forEach((cfg, idx) => {
     const zoneConfig = { g4: idx > 0, z4: idx < SERIES_CONFIG.length - 1 };
     const matched = renderTable(`tbody-${cfg.key}`, tiers[cfg.key], zoneConfig);
@@ -604,9 +575,7 @@ function render() {
     section.style.display = filtering && matched === 0 ? "none" : "";
     section.classList.toggle("collapsed", collapsedSeries.has(cfg.key) && !filtering);
   });
-  renderStats();
-  renderHighlights();
-  renderUpdateDates();
+  renderControlBox();
   renderVotesPanel();
   renderCarousel();
 }
@@ -909,12 +878,7 @@ async function handleVoteClick(band, direction, upBtn, downBtn) {
     }
     render();
   } catch (err) {
-    if (err.message === "daily-limit") {
-      track("vote_limit_reached");
-      alert("Você atingiu o limite de votos por hoje. Volte amanhã!");
-    } else {
-      alert("Erro ao votar: " + err.message);
-    }
+    alert("Erro ao votar: " + err.message);
     render();
   }
 }
@@ -943,32 +907,15 @@ async function castVote(band, direction) {
 
   const bandRef = db.collection("bands").doc(band.id);
   const voteRef = bandRef.collection("votes").doc(uid);
-  const voterRef = db.collection("voters").doc(uid);
 
   await db.runTransaction(async (tx) => {
-    const [voteSnap, voterSnap] = await Promise.all([tx.get(voteRef), tx.get(voterRef)]);
+    const voteSnap = await tx.get(voteRef);
     const previousDirection = voteSnap.exists ? voteSnap.data().direction : null;
     if (previousDirection === direction) return;
 
-    const now = firebase.firestore.Timestamp.now(); // só p/ comparar expiração localmente
-    const serverNow = firebase.firestore.FieldValue.serverTimestamp(); // gravado no banco
-    const dayMs = 24 * 60 * 60 * 1000;
+    const serverNow = firebase.firestore.FieldValue.serverTimestamp();
 
-    if (!previousDirection) {
-      if (!voterSnap.exists) {
-        tx.set(voterRef, { dailyCount: 1, windowStart: serverNow });
-      } else {
-        const voter = voterSnap.data();
-        const expired = now.toMillis() >= voter.windowStart.toMillis() + dayMs;
-        if (expired) {
-          tx.update(voterRef, { dailyCount: 1, windowStart: serverNow });
-        } else {
-          if (voter.dailyCount + 1 > DAILY_VOTE_LIMIT) throw new Error("daily-limit");
-          tx.update(voterRef, { dailyCount: voter.dailyCount + 1, windowStart: voter.windowStart });
-        }
-      }
-    }
-
+    // Um voto por banda (a estrutura garante); sem limite de quantas bandas.
     if (previousDirection) {
       tx.update(voteRef, { direction, updatedAt: serverNow });
     } else {
@@ -1001,7 +948,6 @@ async function refreshTodayVotes() {
     const ts = firebase.firestore.Timestamp.fromDate(startOfToday);
     const snap = await db.collectionGroup("votes").where("createdAt", ">=", ts).get();
     todayVotes = snap.docs.map((d) => d.data());
-    renderHighlights();
     renderVotesPanel();
   } catch (err) {
     console.error("Erro ao carregar votos de hoje:", err);
@@ -1181,7 +1127,7 @@ function subscribeToMeta() {
     .onSnapshot(
       (snap) => {
         metaState = snap.data() || {};
-        renderUpdateDates();
+        renderControlBox();
         // Quando a semana fecha (lastUpdate muda), os votos foram apagados no banco.
         // Recarrega os "meus votos" pra limpar os botões sozinho, sem precisar dar F5.
         const closeMs = metaState.lastUpdate && metaState.lastUpdate.toMillis();
@@ -1368,6 +1314,13 @@ function wireControls() {
     if (e.target.value) track("filter_genre", { genre: e.target.value });
   });
 
+  document.getElementById("uf-filter").addEventListener("change", (e) => {
+    filterState.uf = e.target.value;
+    render();
+    if (e.target.value) track("filter_uf", { uf: e.target.value });
+  });
+
+
   document.getElementById("refresh-votes-btn").addEventListener("click", refreshTodayVotes);
   document.getElementById("close-week-btn").addEventListener("click", closeWeek);
 }
@@ -1385,7 +1338,7 @@ function setAdminUI(loggedIn, label) {
     toggleBtn.textContent = `Sair (${label})`;
     toggleBtn.classList.add("is-logged-in");
   } else {
-    toggleBtn.textContent = "Admin";
+    toggleBtn.textContent = "Login";
     toggleBtn.classList.remove("is-logged-in");
   }
 }
@@ -1420,6 +1373,7 @@ function openEditModal(band) {
   document.getElementById("edit-youtube").value = band.youtube || "";
   document.getElementById("edit-instagram").value = band.instagram || "";
   document.getElementById("edit-location").value = band.location || "";
+  document.getElementById("edit-bio").value = band.bio || "";
   document.getElementById("edit-error").classList.add("hidden");
   document.getElementById("edit-modal").classList.remove("hidden");
   document.getElementById("edit-name").focus();
@@ -1479,6 +1433,7 @@ document.getElementById("edit-form").addEventListener("submit", (e) => {
     youtube: document.getElementById("edit-youtube").value.trim(),
     instagram: normalizeInstagram(document.getElementById("edit-instagram").value),
     location: document.getElementById("edit-location").value.trim(),
+    bio: document.getElementById("edit-bio").value.trim(),
   });
   closeEditModal();
 });
@@ -1500,6 +1455,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
   }
 });
 
+let currentUid = null;
 auth.onAuthStateChanged((user) => {
   if (!user) {
     auth.signInAnonymously().catch((err) => console.error("Erro no login anônimo:", err));
@@ -1507,13 +1463,19 @@ auth.onAuthStateChanged((user) => {
   }
   isAdmin = !user.isAnonymous;
   setAdminUI(isAdmin, isAdmin ? user.email.split("@")[0] : "");
-  loadMyVotes(user.uid);
-  if (isAdmin) {
-    useCollection(); // admin lê a coleção (precisa do pending)
-    rebuildBoard(); // garante que o board existe/está fresco
-    refreshTodayVotes(); // popula o painel de admin
-  } else {
-    useBoard(); // visitante comum lê só o board (barato)
+  // onAuthStateChanged também dispara na renovação horária do token — só faz a
+  // inicialização (leituras) quando o usuário REALMENTE muda, não a cada refresh.
+  const isNewLogin = user.uid !== currentUid;
+  currentUid = user.uid;
+  if (isNewLogin) {
+    loadMyVotes(user.uid);
+    if (isAdmin) {
+      useCollection(); // admin lê a coleção (precisa do pending)
+      rebuildBoard(); // garante que o board existe/está fresco
+      refreshTodayVotes(); // popula o painel de admin
+    } else {
+      useBoard(); // visitante comum lê só o board (barato)
+    }
   }
   render();
 });

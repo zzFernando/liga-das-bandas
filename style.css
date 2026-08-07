@@ -35,7 +35,7 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Space Grotesk", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -43,20 +43,51 @@ body {
 .topbar {
   background: var(--header-bg);
   color: var(--header-text);
-  padding: 28px 20px;
+  padding: 14px 20px 18px;
   text-align: center;
 }
+.topbar-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+}
 
-.topbar h1 { margin: 0 0 4px; font-size: 1.8rem; }
+.topbar h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
 .subtitle { margin: 0; opacity: 0.85; font-size: 0.95rem; }
 
 .band-carousel {
+  position: relative;
   margin-top: 12px;
   overflow: hidden;
   width: 100%;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
+
+/* Linha fixa de informações, abaixo dos filtros (no header verde) */
+.cb-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 8px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: #d7e6db;
+}
+.cb-info strong { color: #fff; font-weight: 650; }
+.cb-info .cb-up { color: #6ee7a0; }
+.cb-info .cb-down { color: #f9a8a4; }
+.cb-info .cb-muted { color: #b9cdc0; }
+.cb-info .cb-sep { color: rgba(255, 255, 255, 0.35); font-style: normal; }
 
 .carousel-track {
   display: flex;
@@ -87,8 +118,9 @@ body {
 
 .admin-toggle-btn {
   position: absolute;
-  top: 16px;
-  right: 20px;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   background: transparent;
   border-color: rgba(255, 255, 255, 0.5);
   color: #fff;
@@ -155,7 +187,7 @@ body {
 .band-modal-links { display: flex; justify-content: center; }
 .band-modal-links .band-icons { gap: 14px; transform: scale(1.4); }
 
-.band-name-link { cursor: pointer; }
+.band-name-link { cursor: pointer; font-weight: 600; }
 .band-name-link:hover { text-decoration: underline; }
 
 .band-share-btn {
@@ -268,12 +300,17 @@ input, button {
   font-size: 0.95rem;
 }
 
-input[type="text"], input[type="number"], input[type="url"] {
+input[type="text"], input[type="number"], input[type="url"], textarea {
   padding: 9px 11px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--bg);
   color: var(--text);
+}
+textarea {
+  font: inherit;
+  resize: vertical;
+  width: 100%;
 }
 
 button {
@@ -299,54 +336,62 @@ button.secondary {
   color: var(--text-muted);
 }
 
-.stats {
+.control-box {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-
-.stats strong { color: var(--text); }
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
-  align-items: center;
-  justify-content: center;
 }
 
-.filters input[type="text"] { flex: 2 1 220px; }
-
-.filters select {
-  flex: 1 1 160px;
-  padding: 9px 11px;
+.cb-filters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
+}
+.header-filters {
+  max-width: 720px;
+  margin: 12px auto 0;
+}
+.cb-filters input[type="text"],
+.cb-filters select {
+  flex: 1 1 0;
+  width: 0; /* com flex-grow, garante os três exatamente iguais */
+  min-width: 0;
+  height: 40px; /* altura fixa igual pro input e pros selects */
+  padding: 0 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--bg);
   color: var(--text);
+  font: inherit;
 }
-
-.filters button {
-  flex: 0 0 auto;
-  background: transparent;
-  color: var(--text);
-  border-color: var(--border);
-  white-space: nowrap;
+.cb-filters input[type="text"] {
+  padding-left: 30px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8f98' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 9px center;
+  background-size: 15px;
 }
 
 .tier-title {
-  margin: 0 0 10px;
-  font-size: 1.15rem;
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 6px;
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  display: block;
+  text-align: center;
+  padding: 9px 14px;
+  border-radius: 10px 10px 0 0;
   color: #fff;
   cursor: pointer;
   user-select: none;
 }
+.tier.collapsed .tier-title { border-radius: 10px; }
 
 .tier-caret {
   display: inline-block;
@@ -409,7 +454,8 @@ button.secondary {
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
   background: var(--panel-bg);
 }
 
@@ -496,6 +542,7 @@ table.liga-table {
   white-space: nowrap;
 }
 
+
 @media (prefers-color-scheme: dark) {
   .band-genre { color: #3ddc84; }
   .band-loc { color: #7aa8ff; }
@@ -581,62 +628,6 @@ table.liga-table {
 .icon-btn.danger:hover { border-color: var(--z4-border); color: var(--z4-border); }
 .icon-btn:hover { color: var(--text); }
 
-.update-dates {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.update-dates strong { color: var(--text); }
-
-.howto {
-  display: flex;
-  gap: 10px 20px;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--panel-bg);
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.howto strong { color: var(--text); }
-
-.highlights {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-}
-
-.highlight-card {
-  background: var(--panel-bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.highlight-label {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
-
-.highlight-name { font-weight: 700; }
-
-.highlight-value {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
 .legend {
   display: flex;
   gap: 20px;
@@ -679,11 +670,10 @@ table.liga-table {
 /* ---- Mobile ---- */
 @media (max-width: 600px) {
   main { padding: 12px; gap: 18px; }
-  /* padding-top maior: o botão Admin é absoluto no topo, o título passa abaixo dele. */
-  .topbar { padding: 46px 12px 16px; }
-  .topbar h1 { font-size: 1.35rem; }
+  .topbar { padding: 12px 14px 14px; }
+  .topbar h1 { font-size: 1.5rem; }
   .subtitle { font-size: 0.82rem; }
-  .admin-toggle-btn { top: 10px; right: 10px; padding: 5px 10px; font-size: 0.78rem; }
+  .admin-toggle-btn { padding: 5px 12px; font-size: 0.78rem; }
 
   /* Tabela cabe sem rolar de lado: menos padding, foto e fontes menores. */
   table.liga-table { min-width: 0; }
@@ -695,6 +685,6 @@ table.liga-table {
   .vote-btn { width: 40px; height: 40px; font-size: 1.1rem; }
   .vote-cell { gap: 5px; }
 
-  .howto { font-size: 0.8rem; gap: 6px 14px; }
+  .cb-info { font-size: 0.78rem; }
   .panel { padding: 14px; }
 }

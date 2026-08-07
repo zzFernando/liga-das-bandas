@@ -25,8 +25,14 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// Ranking: votos (score) em 1º lugar; listeners só desempatam quem tem os mesmos votos.
+// Assim a corrida é 100% voto e o dado congelado (listeners) só organiza empates.
+function byRank(a, b) {
+  return (b.score || 0) - (a.score || 0) || (b.listeners || 0) - (a.listeners || 0);
+}
+
 function getTiers() {
-  const sorted = [...state.bands].sort((a, b) => (b.score || 0) - (a.score || 0));
+  const sorted = [...state.bands].sort(byRank);
   const total = sorted.length;
   const groupCount = SERIES_CONFIG.length;
   const base = Math.floor(total / groupCount);
@@ -284,7 +290,7 @@ function renderStats() {
     statsEl.innerHTML = "";
     return;
   }
-  const leader = [...state.bands].sort((a, b) => (b.score || 0) - (a.score || 0))[0];
+  const leader = [...state.bands].sort(byRank)[0];
   statsEl.innerHTML = `
     <span><strong>${total}</strong> banda${total === 1 ? "" : "s"} na liga</span>
     <span>Líder geral: <strong>${escapeHtml(leader.name)}</strong></span>
@@ -702,52 +708,8 @@ async function refreshTodayVotes() {
   }
 }
 
-// Pontos que cada voto líquido vale sobre o seed de popularidade (0–100).
-// V=2 → ~50 votos líquidos varrem a faixa inteira; virar rival próximo custa bem menos.
+// Pontos que cada voto líquido (↑−↓) vale no ranking, aplicados ao fechar a semana.
 const VOTE_WEIGHT = 2;
-
-async function seedRankingFromListeners() {
-  if (!isAdmin) return;
-  const nums = state.bands
-    .map((b) => (typeof b.listeners === "number" ? b.listeners : null))
-    .filter((n) => n && n > 0);
-  if (!nums.length) {
-    alert("Nenhuma banda tem ouvintes (listeners) pra semear.");
-    return;
-  }
-  // Escala logarítmica pra 0–100 (a distribuição vai de dezenas a dezenas de milhares).
-  const logs = nums.map((n) => Math.log(n));
-  const minLog = Math.min(...logs);
-  const span = Math.max(...logs) - minLog || 1;
-  if (
-    !confirm(
-      `Definir a pontuação de largada de ${state.bands.length} banda(s) pela popularidade (0–100)?\n\n` +
-        "Isso SOBRESCREVE os scores atuais e zera os votos pendentes."
-    )
-  )
-    return;
-  const btn = document.getElementById("seed-ranking-btn");
-  btn.disabled = true;
-  try {
-    const batch = db.batch();
-    state.bands.forEach((band) => {
-      const l = typeof band.listeners === "number" && band.listeners > 0 ? band.listeners : null;
-      const seed = l ? Math.round((100 * (Math.log(l) - minLog)) / span) : 0;
-      batch.update(db.collection("bands").doc(band.id), {
-        score: seed,
-        previousScore: seed,
-        pendingUp: 0,
-        pendingDown: 0,
-      });
-    });
-    await batch.commit();
-    alert("Ranking semeado pela popularidade. Agora os votos movem a partir daí.");
-  } catch (err) {
-    alert("Erro ao semear ranking: " + err.message);
-  } finally {
-    btn.disabled = false;
-  }
-}
 
 async function closeWeek() {
   if (!isAdmin) return;
@@ -905,7 +867,6 @@ function wireControls() {
   });
 
   document.getElementById("close-week-btn").addEventListener("click", closeWeek);
-  document.getElementById("seed-ranking-btn").addEventListener("click", seedRankingFromListeners);
 }
 
 function usernameToEmail(username) {
